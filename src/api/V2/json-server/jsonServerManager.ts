@@ -28,7 +28,7 @@ export class FavoriteManager implements IFavorite {
   async removeRepository(repository: Repository) {
     const favorite = await this.getFavorites();
     console.log(favorite);
-    
+
     if (favorite) {
       favorite.repository = favorite.repository.filter(
         (repo) => repo.id !== repository.id
@@ -38,12 +38,13 @@ export class FavoriteManager implements IFavorite {
     return repository;
   }
   async getFavorites() {
-    const res = await this.baseClass.getOne<Favorites>(this.id);    
+    const res = await this.baseClass.getOne<Favorites>(this.id);
     return res;
   }
   async createDefaultFavorites() {
-    const favorite = await this.getFavorites();
-    if (!favorite) {
+    try {
+      await this.getFavorites();
+    } catch (error) {
       const favorites: Favorites = {
         id: this.id,
         repository: [],

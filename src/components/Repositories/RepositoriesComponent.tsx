@@ -55,7 +55,7 @@ const RepositoriesGrid = () => {
   return (
     <Grid container spacing={2}>
       {data.map((repository) => (
-        <RepositoriesGridItem item xs={12} sm={6} md={4} key={repository.id}>
+        <RepositoriesGridItem item xs={12} sm={6} md={4} lg={3} key={repository.id}>
           <ShowReposCard
             repository={convertToFavorites(repository)}
             addFavorite={addFavorite}
