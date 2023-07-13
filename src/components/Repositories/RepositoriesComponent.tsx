@@ -9,6 +9,7 @@ import { FavoriteManager } from "../../api/V2/json-server/jsonServerManager";
 import { useAuth } from "../../context/AuthContext";
 import { useFavorite } from "../../hooks/useFavorite";
 import { useEffect, useState } from "react";
+import { SearchText } from "../form/SearchText";
 
 export interface RepositoryIsFavorite extends Repository {
   isFavorite: boolean;
@@ -40,7 +41,7 @@ const RepositoriesGrid = () => {
     };
   };
 
-  const { data, isLoading } = useGithubRepositories<Repository[]>({
+  const { data, isLoading,performSearch } = useGithubRepositories({
     type: pathname as RepositoryType,
   });
 
@@ -53,17 +54,27 @@ const RepositoriesGrid = () => {
   }
 
   return (
-    <Grid container spacing={2}>
-      {data.map((repository) => (
-        <RepositoriesGridItem item xs={12} sm={6} md={4} lg={3} key={repository.id}>
-          <ShowReposCard
-            repository={convertToFavorites(repository)}
-            addFavorite={addFavorite}
-            removeFavorite={removeFavorite}
-          />
-        </RepositoriesGridItem>
-      ))}
-    </Grid>
+    <>
+      <SearchText searchAction={performSearch} />
+      <Grid container spacing={2}>
+        {data.map((repository) => (
+          <RepositoriesGridItem
+            item
+            xs={12}
+            sm={6}
+            md={4}
+            lg={3}
+            key={repository.id}
+          >
+            <ShowReposCard
+              repository={convertToFavorites(repository)}
+              addFavorite={addFavorite}
+              removeFavorite={removeFavorite}
+            />
+          </RepositoriesGridItem>
+        ))}
+      </Grid>
+    </>
   );
 };
 

@@ -3,27 +3,26 @@ import { useAuth } from "../context/AuthContext";
 import { RepositoryType } from "../interfaces/repositoryFactory";
 import { getFavorites } from "../api/v2/json-server/getFavorites";
 import { getRepositories } from "../api/v1/github/getRepositories";
+import { Repository } from "../interfaces/repositories";
 
 interface useGithubRepositoriesProps {
   type: RepositoryType;
 }
 
-export const useGithubRepositories = <T>({
-  type,
-}: useGithubRepositoriesProps) => {
-  const [data, setData] = useState<T | null>(null);
+export const useGithubRepositories = ({ type }: useGithubRepositoriesProps) => {
+  const [data, setData] = useState<Repository[]>();
+  const [defaultData, setDefaultData] = useState<Repository[]>();
   const [isLoading, setIsLoading] = useState(false);
   const { user, credentials } = useAuth();
+
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
       try {
         const repo = getFactory();
-        console.log(repo);
-
-        const response = (await repo?.getRepositories()) as T;
+        const response = await repo?.getRepositories();
         setData(response);
-        console.log(response);
+        setDefaultData(response);
       } catch (error) {
         console.error(error);
       } finally {
@@ -42,6 +41,17 @@ export const useGithubRepositories = <T>({
     void fetchData();
   }, [type]);
 
+  const performSearch = (search: string) => {
+    if (!search) {
+      setData(defaultData);
+      return;
+    }
+    const myData = data;
+    if (!myData) return;
+    const newData = myData.filter((item) => item.name.includes(search));
+    setData(newData);
+  };
+
   const memoizedData = useMemo(() => data, [data]);
-  return { data: memoizedData, isLoading };
+  return { data: memoizedData, isLoading, performSearch };
 };
